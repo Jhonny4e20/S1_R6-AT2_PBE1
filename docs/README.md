@@ -116,3 +116,5 @@
     "message": "Pedido deletado com sucesso!"
 }
 ```
+
+<!--API Entregas-->
