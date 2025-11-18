@@ -3,17 +3,26 @@ const { clienteModel } = require("../models/clienteModel");
 
 const pedidoController = {
 
+    // ===================================================== //
+    // LISTAR PEDIDOS                                        //
+    // GET /pedidos                                          //
+    // ===================================================== //
     listarPedidos: async (req, res) => {
         try {
             const pedidos = await pedidoModel.buscarTodos();
-            res.status(200).json(pedidos);
+
+            return res.status(200).json(pedidos);
 
         } catch (error) {
             console.error("ERRO ao listar pedidos:", error);
-            res.status(500).json({ erro: "ERRO interno ao listar pedidos!" });
+            return res.status(500).json({ erro: "ERRO interno ao listar pedidos!" });
         }
     },
 
+    // ===================================================== //
+    // CRIAR PEDIDO                                          //
+    // POST /pedidos                                         //
+    // ===================================================== //
     criarPedido: async (req, res) => {
         try {
             const {
@@ -26,10 +35,11 @@ const pedidoController = {
                 valorKg
             } = req.body;
 
+            // Validação dos campos obrigatórios
             if (
                 !idCliente || !dataPedido || !tipoEntrega ||
-                distanciaKm == undefined || pesoCarga == undefined ||
-                valorKm == undefined || valorKg == undefined
+                distanciaKm === undefined || pesoCarga === undefined ||
+                valorKm === undefined || valorKg === undefined
             ) {
                 return res.status(400).json({ erro: "Campos obrigatórios não preenchidos!" });
             }
@@ -54,14 +64,18 @@ const pedidoController = {
                 valorKg
             );
 
-            res.status(201).json({ mensagem: "Pedido cadastrado com sucesso!" });
+            return res.status(201).json({ mensagem: "Pedido cadastrado com sucesso!" });
 
         } catch (error) {
             console.error("ERRO ao cadastrar pedido:", error);
-            res.status(500).json({ erro: "ERRO interno ao cadastrar pedido!" });
+            return res.status(500).json({ erro: "ERRO interno ao cadastrar pedido!" });
         }
     },
 
+    // ===================================================== //
+    // ATUALIZAR PEDIDO                                      //
+    // PUT /pedidos/:idPedido                                //
+    // ===================================================== //
     atualizarPedido: async (req, res) => {
         try {
             const { idPedido } = req.params;
@@ -85,19 +99,22 @@ const pedidoController = {
                 return res.status(404).json({ erro: "Pedido não encontrado!" });
             }
 
+            const pedidoAtual = pedido[0];
+
+            // Se usuário enviar novo ID de cliente → validar
             if (idCliente) {
                 if (idCliente.length !== 36) {
                     return res.status(400).json({ erro: "ID do cliente inválido!" });
                 }
 
                 const cliente = await clienteModel.buscarUm(idCliente);
+
                 if (!cliente || cliente.length !== 1) {
                     return res.status(404).json({ erro: "Cliente não encontrado!" });
                 }
             }
 
-            const pedidoAtual = pedido[0];
-
+            // Atualiza apenas os campos enviados
             await pedidoModel.atualizarPedido(
                 idPedido,
                 idCliente ?? pedidoAtual.idCliente,
@@ -109,14 +126,18 @@ const pedidoController = {
                 valorKg ?? pedidoAtual.valorKg
             );
 
-            res.status(200).json({ mensagem: "Pedido atualizado com sucesso!" });
+            return res.status(200).json({ mensagem: "Pedido atualizado com sucesso!" });
 
         } catch (error) {
             console.error("ERRO ao atualizar pedido:", error);
-            res.status(500).json({ erro: "Erro interno ao atualizar pedido!" });
+            return res.status(500).json({ erro: "Erro interno ao atualizar pedido!" });
         }
     },
 
+    // ===================================================== //
+    // DELETAR PEDIDO                                        //
+    // DELETE /pedidos/:idPedido                             //
+    // ===================================================== //
     deletarPedido: async (req, res) => {
         try {
             const { idPedido } = req.params;
@@ -133,11 +154,11 @@ const pedidoController = {
 
             await pedidoModel.deletarPedido(idPedido);
 
-            res.status(200).json({ mensagem: "Pedido deletado com sucesso!" });
+            return res.status(200).json({ mensagem: "Pedido deletado com sucesso!" });
 
         } catch (error) {
             console.error("ERRO ao deletar pedido:", error);
-            res.status(500).json({ erro: "Erro interno ao deletar pedido!" });
+            return res.status(500).json({ erro: "Erro interno ao deletar pedido!" });
         }
     }
 };
