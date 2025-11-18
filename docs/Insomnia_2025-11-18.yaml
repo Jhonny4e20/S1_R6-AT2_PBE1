@@ -1,0 +1,291 @@
+type: collection.insomnia.rest/5.0
+name: S1_R6-AT2_PBE1
+meta:
+  id: wrk_e85eb8f850154bf3ae706f06d4239d3b
+  created: 1762861485894
+  modified: 1762861485894
+  description: ""
+collection:
+  - name: CLIENTES
+    meta:
+      id: fld_4dce75d13c85464fb86d60e412392039
+      created: 1762861524510
+      modified: 1762861543880
+      sortKey: -1762861524510
+      description: ""
+    children:
+      - url: localhost:8081/clientes
+        name: Listar Clientes
+        meta:
+          id: req_ecbab8287a0b4f46900e76b1ce9da282
+          created: 1762861602827
+          modified: 1763470485220
+          isPrivate: false
+          description: ""
+          sortKey: -1762861602827
+        method: GET
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.0.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: localhost:8081/clientes
+        name: Cadastrar Clientes
+        meta:
+          id: req_8483415641c640689370b69bd28831d4
+          created: 1762861685962
+          modified: 1763468144879
+          isPrivate: false
+          description: ""
+          sortKey: -1762861685962
+        method: POST
+        body:
+          mimeType: application/json
+          text: >+
+            {
+            	"nomeCliente": "Patrícia Helena Furtado",
+            	"cpfCliente": "21789435602",
+            	"telefoneCliente": "85997211459",
+            	"emailCliente": "patricia.furtado@example.com",
+            	"enderecoCliente": "Rua Fortaleza, 312, Meireles, Fortaleza, CE, 60160-250"
+            }
+
+
+
+
+
+
+
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.0.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: localhost:8081/clientes/DC0AA0DF-4780-4DCF-A265-69DAC2F267B6
+        name: Atualizar Clientes
+        meta:
+          id: req_06a4f2ce920b4acd97dec620af2e980d
+          created: 1762884418008
+          modified: 1762887123366
+          isPrivate: false
+          description: ""
+          sortKey: -1762861686062
+        method: PUT
+        body:
+          mimeType: application/json
+          text: >
+            {
+            	"nomeCliente": "João Pedro Barbosa Kovalski",
+            	"cpfCliente": "49216747870",
+            		"telefoneCliente": "19999627855",
+            	"emailCliente": "joao.kovalski@aluno.senai.br",
+            	"enderecoCliente": "Rua Saulo Aparício Duarte Pinto, 117, Villa Régio, Campinas, São Paulo, 13180-500"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.0.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: localhost:8081/clientes/37B79EC7-5FC6-4309-ADF0-8CA81C6B1D46
+        name: Deletar Clientes
+        meta:
+          id: req_dd6b729920ef43f1b8866a80f1dc9e11
+          created: 1762888072316
+          modified: 1763463173372
+          isPrivate: false
+          description: ""
+          sortKey: -1762888072316
+        method: DELETE
+        headers:
+          - name: User-Agent
+            value: insomnia/12.0.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: PEDIDOS
+    meta:
+      id: fld_af2a502873904d769f12dbdb4d253c61
+      created: 1762861536556
+      modified: 1762861536556
+      sortKey: -1762861536556
+      description: ""
+    children:
+      - url: localhost:8081/pedidos/DCB78CFE-FAC5-4D62-8799-050226E1BE3E
+        name: Deletar Pedidos
+        meta:
+          id: req_f13fef466f5f45baa26f1083e9ad49cb
+          created: 1763466197774
+          modified: 1763478443437
+          isPrivate: false
+          description: ""
+          sortKey: -1763466286310
+        method: DELETE
+        headers:
+          - name: User-Agent
+            value: insomnia/12.0.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: localhost:8081/pedidos/0969D37F-F14A-4B9F-A277-2303C5ED3F12
+        name: Atualizar Pedidos
+        meta:
+          id: req_2a828799793e46d5953beb99bff1603e
+          created: 1763466200512
+          modified: 1763478376200
+          isPrivate: false
+          description: ""
+          sortKey: -1763466286210
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "dataPedido": "2025-10-03",
+              "tipoEntrega": "urgente",
+              "distanciaKm": 70,
+              "pesoCarga": 28.5,
+              "valorKm": 4.7,
+              "valorKg": 2.9
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.0.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: localhost:8081/pedidos
+        name: Cadastrar Pedidos
+        meta:
+          id: req_eae6fe0e52d444629b86a9c326851b51
+          created: 1763466202448
+          modified: 1763474442111
+          isPrivate: false
+          description: ""
+          sortKey: -1763466286110
+        method: POST
+        body:
+          mimeType: application/json
+          text: "{
+
+            \t\"idCliente\": \"78CA14ED-8105-4BE7-B7C2-E6E536708D0E\",
+
+            \  \"dataPedido\": \"2025-10-03\",
+
+            \  \"tipoEntrega\": \"urgente\",
+
+            \  \"distanciaKm\": 70,
+
+            \  \"pesoCarga\": 28.5,
+
+            \  \"valorKm\": 4.7,
+
+            \  \"valorKg\": 2.9
+
+            }
+
+
+
+
+
+
+
+
+            \t"
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.0.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: localhost:8081/pedidos
+        name: Listar Pedidos
+        meta:
+          id: req_9c5c63b2af704a58827cc22ec47c0d13
+          created: 1763466205203
+          modified: 1763473534372
+          isPrivate: false
+          description: ""
+          sortKey: -1763466286010
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.0.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: ENTREGA
+    meta:
+      id: fld_fa0a2a13a4f74c6cb0cd0f787aaaf43b
+      created: 1762861555245
+      modified: 1762861555245
+      sortKey: -1762861555245
+      description: ""
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_9fc3d486a338c1f9324784bc8e93729f4cb378fa
+    created: 1762861485905
+    modified: 1762861485905
+environments:
+  name: Base Environment
+  meta:
+    id: env_9fc3d486a338c1f9324784bc8e93729f4cb378fa
+    created: 1762861485899
+    modified: 1762861485899
+    isPrivate: false
