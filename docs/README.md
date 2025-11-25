@@ -118,3 +118,10 @@
 ```
 
 <!--API Entregas-->
+## API Entregas
+
+### Entregas
+
+#### GET/entregas
+-**Descrição**: Obtém uma lista de Entregas
+-**Response**: Array de entregas

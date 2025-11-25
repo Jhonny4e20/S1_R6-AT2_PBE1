@@ -80,7 +80,7 @@ const pedidoController = {
             }
 
 
-            await pedidoModel.inserirPedido( idCliente, dataPedido, tipoEntrega, distanciaKm, pesoCarga, valorKm, valorKg);
+            await pedidoModel.inserirPedidos( idCliente, dataPedido, tipoEntrega, distanciaKm, pesoCarga, valorKm, valorKg);
 
             res.status(201).json({ message: "Pedido cadastrado com sucesso!"});
         }catch (error) {

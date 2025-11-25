@@ -19,7 +19,7 @@ collection:
         meta:
           id: req_ecbab8287a0b4f46900e76b1ce9da282
           created: 1762861602827
-          modified: 1763470485220
+          modified: 1764088994905
           isPrivate: false
           description: ""
           sortKey: -1762861602827
@@ -45,7 +45,7 @@ collection:
         meta:
           id: req_8483415641c640689370b69bd28831d4
           created: 1762861685962
-          modified: 1763468144879
+          modified: 1763487900042
           isPrivate: false
           description: ""
           sortKey: -1762861685962
@@ -55,9 +55,9 @@ collection:
           text: >+
             {
             	"nomeCliente": "Patrícia Helena Furtado",
-            	"cpfCliente": "21789435602",
+            	"cpfCliente": "21789435601",
             	"telefoneCliente": "85997211459",
-            	"emailCliente": "patricia.furtado@example.com",
+            	"emailCliente": "patricie.furtado@example.com",
             	"enderecoCliente": "Rua Fortaleza, 312, Meireles, Fortaleza, CE, 60160-250"
             }
 
@@ -80,12 +80,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: localhost:8081/clientes/DC0AA0DF-4780-4DCF-A265-69DAC2F267B6
+      - url: localhost:8081/clientes/34EABF30-795F-4D8A-96E2-C584AA163DD1
         name: Atualizar Clientes
         meta:
           id: req_06a4f2ce920b4acd97dec620af2e980d
           created: 1762884418008
-          modified: 1762887123366
+          modified: 1764088376030
           isPrivate: false
           description: ""
           sortKey: -1762861686062
@@ -94,11 +94,11 @@ collection:
           mimeType: application/json
           text: >
             {
-            	"nomeCliente": "João Pedro Barbosa Kovalski",
-            	"cpfCliente": "49216747870",
-            		"telefoneCliente": "19999627855",
-            	"emailCliente": "joao.kovalski@aluno.senai.br",
-            	"enderecoCliente": "Rua Saulo Aparício Duarte Pinto, 117, Villa Régio, Campinas, São Paulo, 13180-500"
+            		"nomeCliente": "Ana Beatriz Santos Moura",
+            		"cpfCliente": "54120387699",
+            		"telefoneCliente": "(31)99785-6412",
+            		"emailCliente": "ana.bmoura@example.com",
+            		"enderecoCliente": "Rua do Sol, 45, Centro, Belo Horizonte, MG, 30130-030"
             }
         headers:
           - name: Content-Type
@@ -113,12 +113,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: localhost:8081/clientes/37B79EC7-5FC6-4309-ADF0-8CA81C6B1D46
+      - url: localhost:8081/clientes/34EABF30-795F-4D8A-96E2-C584AA163DD1
         name: Deletar Clientes
         meta:
           id: req_dd6b729920ef43f1b8866a80f1dc9e11
           created: 1762888072316
-          modified: 1763463173372
+          modified: 1764092809530
           isPrivate: false
           description: ""
           sortKey: -1762888072316
@@ -142,12 +142,12 @@ collection:
       sortKey: -1762861536556
       description: ""
     children:
-      - url: localhost:8081/pedidos/DCB78CFE-FAC5-4D62-8799-050226E1BE3E
+      - url: localhost:8081/pedidos/6F014C3E-E694-43DD-BCCC-31213F3757B0
         name: Deletar Pedidos
         meta:
           id: req_f13fef466f5f45baa26f1083e9ad49cb
           created: 1763466197774
-          modified: 1763478443437
+          modified: 1764096260156
           isPrivate: false
           description: ""
           sortKey: -1763466286310
@@ -202,7 +202,7 @@ collection:
         meta:
           id: req_eae6fe0e52d444629b86a9c326851b51
           created: 1763466202448
-          modified: 1763474442111
+          modified: 1764094916460
           isPrivate: false
           description: ""
           sortKey: -1763466286110
@@ -211,19 +211,19 @@ collection:
           mimeType: application/json
           text: "{
 
-            \t\"idCliente\": \"78CA14ED-8105-4BE7-B7C2-E6E536708D0E\",
+            \t\"idCliente\": \"DC0AA0DF-4780-4DCF-A265-69DAC2F267B6\",
 
             \  \"dataPedido\": \"2025-10-03\",
 
             \  \"tipoEntrega\": \"urgente\",
 
-            \  \"distanciaKm\": 70,
+            \  \"distanciaKm\": 10,
 
-            \  \"pesoCarga\": 28.5,
+            \  \"pesoCarga\": 10,
 
-            \  \"valorKm\": 4.7,
+            \  \"valorKm\": 2,
 
-            \  \"valorKg\": 2.9
+            \  \"valorKg\": 2
 
             }
 
@@ -253,10 +253,44 @@ collection:
         meta:
           id: req_9c5c63b2af704a58827cc22ec47c0d13
           created: 1763466205203
-          modified: 1763473534372
+          modified: 1764083696868
           isPrivate: false
           description: ""
           sortKey: -1763466286010
+        method: GET
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.0.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: ENTREGAS
+    meta:
+      id: fld_fa0a2a13a4f74c6cb0cd0f787aaaf43b
+      created: 1762861555245
+      modified: 1764074536374
+      sortKey: -1762861555245
+      description: ""
+    children:
+      - url: localhost:8081/entregas
+        name: Listar Entregas
+        meta:
+          id: req_6407bd3fd5094a01963ce439a5ed1d63
+          created: 1763483914162
+          modified: 1764074516204
+          isPrivate: false
+          description: ""
+          sortKey: -1764074516186
         method: GET
         headers:
           - name: User-Agent
@@ -269,13 +303,36 @@ collection:
             send: true
             store: true
           rebuildPath: true
-  - name: ENTREGA
-    meta:
-      id: fld_fa0a2a13a4f74c6cb0cd0f787aaaf43b
-      created: 1762861555245
-      modified: 1762861555245
-      sortKey: -1762861555245
-      description: ""
+      - url: localhost:8081/entregas
+        name: Cadastrar Entregas
+        meta:
+          id: req_3d060d04fee641909c96e083912e1c0a
+          created: 1763483915858
+          modified: 1764096103940
+          isPrivate: false
+          description: ""
+          sortKey: -1764074516286
+        method: POST
+        body:
+          mimeType: application/json
+          text: |+
+            {
+            	"idCliente": "DC0AA0DF-4780-4DCF-A265-69DAC2F267B6"
+            }
+
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.0.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
 cookieJar:
   name: Default Jar
   meta:
