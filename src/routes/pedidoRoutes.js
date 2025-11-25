@@ -1,43 +1,25 @@
 const express = require("express");
 const router = express.Router();
-
-// Importa o controller responsável pelas regras de negócio dos pedidos
-const { pedidoController } = require("../controllers/pedidoController");
+const {pedidoController} = require("../controllers/pedidoController");
 
 /**
- * ======================================================================
- * ROTAS DE PEDIDOS
+ * Define as rotas relacionadas aos pedidos
  * 
  * @module pedidoRoutes
  * 
  * @description
- * Conjunto de rotas responsáveis por gerenciar os pedidos.
- * 
- * - GET /pedidos
- *      → Lista todos os pedidos armazenados no banco de dados.
- * 
- * - POST /pedidos
- *      → Cria um novo pedido com os dados enviados pelo cliente HTTP.
- * 
- * - PUT /pedidos/:idPedido
- *      → Atualiza um pedido existente, buscando-o pelo ID fornecido na URL.
- * 
- * - DELETE /pedidos/:idPedido
- *      → Remove um pedido do sistema pelo ID fornecido na URL.
- * ======================================================================
+ * -GET/pedidos -> Lista todos os pedidos do banco de dados.
+ * -POST/pedidos -> Cria um novo pedido e os seus itens com os dados enviados pelo cliente HTTP
  */
-
-// Lista todos os pedidos
 router.get("/pedidos", pedidoController.listarPedidos);
 
-// Cadastra um novo pedido
+//POST /pedidos -> Cadastra um novo Pedido
 router.post("/pedidos", pedidoController.criarPedido);
 
-// Atualiza um pedido existente
+//PUT /pedidos/:idPedido -> Atualiza um Pedido pelo idPedido
 router.put("/pedidos/:idPedido", pedidoController.atualizarPedido);
 
-// Deleta um pedido pelo ID
+//DELETE /pedidos/:idPedido -> Deleta um Pedido pelo idPedido
 router.delete("/pedidos/:idPedido", pedidoController.deletarPedido);
 
-// Exporta o módulo para ser usado no server.js
 module.exports = { pedidoRoutes: router };

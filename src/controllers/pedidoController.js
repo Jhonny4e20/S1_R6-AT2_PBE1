@@ -1,84 +1,98 @@
-const { pedidoModel } = require("../models/pedidoModel");
-const { clienteModel } = require("../models/clienteModel");
+const { pedidoModel } = require("../models/pedidoModel"); //importa o modelo de pedido
+const { clienteModel } = require("../models/clienteModel"); //importa o modelo de cliente
 
 const pedidoController = {
 
-    // ===================================================== //
-    // LISTAR PEDIDOS                                        //
-    // GET /pedidos                                          //
-    // ===================================================== //
     listarPedidos: async (req, res) => {
         try {
-            const pedidos = await pedidoModel.buscarTodos();
-
-            return res.status(200).json(pedidos);
+            const pedidos = await pedidoModel.buscarTodos(); //busca todos os pedidos no banco de dados
+            res.status(200).json(pedidos);
 
         } catch (error) {
             console.error("ERRO ao listar pedidos:", error);
-            return res.status(500).json({ erro: "ERRO interno ao listar pedidos!" });
+            res.status(500).json({ erro: "ERRO interno ao listar pedidos!" }); //retorna erro 500 em caso de falha no servidor
         }
     },
+   criarPedido: async (req, res) => {
+        
+        try{
 
-    // ===================================================== //
-    // CRIAR PEDIDO                                          //
-    // POST /pedidos                                         //
-    // ===================================================== //
-    criarPedido: async (req, res) => {
-        try {
-            const {
-                idCliente,
+        const { idCliente,
                 dataPedido,
                 tipoEntrega,
                 distanciaKm,
-                pesoCarga,
-                valorKm,
+                pesoCarga, 
+                valorKm, 
                 valorKg
-            } = req.body;
+                } = req.body
 
-            // Validação dos campos obrigatórios
-            if (
-                !idCliente || !dataPedido || !tipoEntrega ||
-                distanciaKm === undefined || pesoCarga === undefined ||
-                valorKm === undefined || valorKg === undefined
-            ) {
-                return res.status(400).json({ erro: "Campos obrigatórios não preenchidos!" });
+            if(idCliente == undefined || dataPedido == undefined || tipoEntrega == undefined || distanciaKm == undefined || pesoCarga == undefined || valorKm == undefined || valorKg == undefined){
+                return res.status(400).json({erro: "Campos obrigatórios não foram preenchidos"})
             }
 
-            if (idCliente.length !== 36) {
-                return res.status(400).json({ erro: "ID do cliente inválido!" });
+            if ( isNaN(distanciaKm) || isNaN(pesoCarga) || isNaN(valorKm) || isNaN(valorKg)  ) {
+                return res.status(400).json({erro: "Campos preenchidos com valores inválidos"})
             }
 
-            const cliente = await clienteModel.buscarUm(idCliente);
+            if(idCliente.length != 36 ){
+                return res.status(400).json({erro: "Id do Cliente inválido"})
+            }
+            
+            const data = new Date(dataPedido);
+            if(isNaN(data.getTime())){
+                return res.status(400).json({erro: "Data do pedido inválida"})
+            }
+            
+            const cliente = await clienteModel.buscarUm(idCliente); 
 
-            if (!cliente || cliente.length !== 1) {
-                return res.status(404).json({ erro: "Cliente não encontrado!" });
+            if(!cliente || cliente.length != 1){
+                return res.status(404).json({erro: "Cliente não encontrado"})
+            }  
+
+            valorDistanciaEntrega = distanciaKm * valorKm
+
+            valorPesoEntrega = pesoCarga * valorKg
+
+            valorFinalEntrega = valorPesoEntrega + valorDistanciaEntrega
+
+
+            
+            if(tipoEntrega == "urgente".toLowerCase()){
+                acrescimoEntrega = (valorFinalEntrega * 0.2)
+
+                valorFinalEntrega = valorFinalEntrega + acrescimoEntrega
+                
+                if(pesoCarga > 50){
+                taxaExtraEntrega = valorFinalEntrega + 15
             }
 
-            await pedidoModel.inserirPedido(
-                idCliente,
-                dataPedido,
-                tipoEntrega,
-                distanciaKm,
-                pesoCarga,
-                valorKm,
-                valorKg
-            );
+                if(valorFinalEntrega > 500){
+                descontoEntrega = (valorFinalEntrega * 0.1) + valorFinalEntrega
+            }
+            } 
 
-            return res.status(201).json({ mensagem: "Pedido cadastrado com sucesso!" });
+            if(valorFinalEntrega > 500){
+                descontoEntrega = (valorFinalEntrega * 0.1) + valorFinalEntrega
+            }
 
-        } catch (error) {
-            console.error("ERRO ao cadastrar pedido:", error);
-            return res.status(500).json({ erro: "ERRO interno ao cadastrar pedido!" });
+            if(pesoCarga > 50){
+                taxaExtraEntrega = valorFinalEntrega + 15
+            }
+
+
+            await pedidoModel.inserirPedido( idCliente, dataPedido, tipoEntrega, distanciaKm, pesoCarga, valorKm, valorKg);
+
+            res.status(201).json({ message: "Pedido cadastrado com sucesso!"});
+        }catch (error) {
+            console.error("Erro ao cadastrar pedido:", error)
+            res.status(500).json({message: "Erro interno no servidor ao cadastrar pedido!"});
         }
+
     },
 
-    // ===================================================== //
-    // ATUALIZAR PEDIDO                                      //
-    // PUT /pedidos/:idPedido                                //
-    // ===================================================== //
     atualizarPedido: async (req, res) => {
         try {
-            const { idPedido } = req.params;
+            const { idPedido } = req.params; //pega o idPedido dos parâmetros da rota
             const {
                 idCliente,
                 dataPedido,
@@ -87,35 +101,32 @@ const pedidoController = {
                 pesoCarga,
                 valorKm,
                 valorKg
-            } = req.body;
+            } = req.body; 
 
             if (idPedido.length !== 36) {
-                return res.status(400).json({ erro: "ID do pedido inválido!" });
+                return res.status(400).json({ erro: "ID do pedido inválido!" }); //valida o idPedido
             }
 
-            const pedido = await pedidoModel.buscarUm(idPedido);
+            const pedido = await pedidoModel.buscarUm(idPedido); //busca o pedido pelo idPedido
 
             if (!pedido || pedido.length !== 1) {
-                return res.status(404).json({ erro: "Pedido não encontrado!" });
-            }
+                return res.status(404).json({ erro: "Pedido não encontrado!" }); //retorna erro 404 se o pedido não for encontrado
+            } 
 
-            const pedidoAtual = pedido[0];
-
-            // Se usuário enviar novo ID de cliente → validar
             if (idCliente) {
                 if (idCliente.length !== 36) {
-                    return res.status(400).json({ erro: "ID do cliente inválido!" });
+                    return res.status(400).json({ erro: "ID do cliente inválido!" }); //valida o idCliente
                 }
 
-                const cliente = await clienteModel.buscarUm(idCliente);
-
+                const cliente = await clienteModel.buscarUm(idCliente); //busca o cliente pelo idCliente
                 if (!cliente || cliente.length !== 1) {
-                    return res.status(404).json({ erro: "Cliente não encontrado!" });
+                    return res.status(404).json({ erro: "Cliente não encontrado!" }); //retorna erro 404 se o cliente não for encontrado
                 }
             }
 
-            // Atualiza apenas os campos enviados
-            await pedidoModel.atualizarPedido(
+            const pedidoAtual = pedido[0]; //pega o pedido atual
+
+            await pedidoModel.atualizarPedido( //atualiza o pedido no banco de dados
                 idPedido,
                 idCliente ?? pedidoAtual.idCliente,
                 dataPedido ?? pedidoAtual.dataPedido,
@@ -124,43 +135,39 @@ const pedidoController = {
                 pesoCarga ?? pedidoAtual.pesoCarga,
                 valorKm ?? pedidoAtual.valorKm,
                 valorKg ?? pedidoAtual.valorKg
-            );
+            ); //atualiza o pedido no banco de dados
 
-            return res.status(200).json({ mensagem: "Pedido atualizado com sucesso!" });
+            res.status(200).json({ mensagem: "Pedido atualizado com sucesso!" }); //retorna sucesso 200 em caso de atualização bem-sucedida
 
         } catch (error) {
             console.error("ERRO ao atualizar pedido:", error);
-            return res.status(500).json({ erro: "Erro interno ao atualizar pedido!" });
+            res.status(500).json({ erro: "Erro interno ao atualizar pedido!" }); //retorna erro 500 em caso de falha no servidor
         }
     },
 
-    // ===================================================== //
-    // DELETAR PEDIDO                                        //
-    // DELETE /pedidos/:idPedido                             //
-    // ===================================================== //
-    deletarPedido: async (req, res) => {
+    deletarPedido: async (req, res) => { //deleta um pedido
         try {
             const { idPedido } = req.params;
 
-            if (idPedido.length !== 36) {
-                return res.status(400).json({ erro: "ID do pedido inválido!" });
+            if (idPedido.length !== 36) { //valida o idPedido
+                return res.status(400).json({ erro: "ID do pedido inválido!" }); //retorna erro 400 em caso de idPedido inválido
             }
 
-            const pedido = await pedidoModel.buscarUm(idPedido);
+            const pedido = await pedidoModel.buscarUm(idPedido); //busca o pedido pelo idPedido
 
             if (!pedido || pedido.length !== 1) {
-                return res.status(404).json({ erro: "Pedido não encontrado!" });
+                return res.status(404).json({ erro: "Pedido não encontrado!" }); //retorna erro 404 se o pedido não for encontrado
             }
 
             await pedidoModel.deletarPedido(idPedido);
 
-            return res.status(200).json({ mensagem: "Pedido deletado com sucesso!" });
+            res.status(200).json({ mensagem: "Pedido deletado com sucesso!" }); //retorna sucesso 200 em caso de deleção bem-sucedida
 
         } catch (error) {
             console.error("ERRO ao deletar pedido:", error);
-            return res.status(500).json({ erro: "Erro interno ao deletar pedido!" });
+            res.status(500).json({ erro: "Erro interno ao deletar pedido!" }); //retorna erro 500 em caso de falha no servidor
         }
     }
 };
 
-module.exports = { pedidoController };
+module.exports = { pedidoController }; //exporta o pedidoController
