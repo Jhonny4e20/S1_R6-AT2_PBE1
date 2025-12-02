@@ -132,25 +132,7 @@ const entregaController = {
             console.error("Erro ao registrar entrega:", error);
             res.status(500).json({ message: "Erro interno no servidor ao registrar entrega!" });
         }
-    },
-
-    atualizarEntrega: async (req, res) => {
-        try {
-            res.status(200).json({ message: "Atualizar entrega ainda não implementado." });
-        } catch (error) {
-            console.error(error);
-            res.status(500).json({ erro: "Erro interno ao atualizar entrega!" });
-        }
-    },
-
-    deletarEntrega: async (req, res) => {
-        try {
-            res.status(200).json({ message: "Deletar entrega ainda não implementado." });
-        } catch (error) {
-            console.error(error);
-            res.status(500).json({ erro: "Erro interno ao deletar entrega!" });
-        }
     }
-};
+}
 
 module.exports = { entregaController };

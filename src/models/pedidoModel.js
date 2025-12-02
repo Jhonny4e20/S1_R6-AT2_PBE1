@@ -1,3 +1,4 @@
+const { query } = require("mssql");
 const { sql, getConnection } = require("../config/db")
 
 const pedidoModel = {
@@ -109,18 +110,17 @@ const pedidoModel = {
         }
     },
 
-    // CORRIGIDO: agora recebe idPedido corretamente
     atualizarPedido: async (
-        idPedido, idCliente, dataPedido, tipoEntrega,
-        distanciaKM, pesoCarga, valorKM, valorKG
+        idPedido, idCliente, dataPedido, tipoEntrega, distanciaKM, pesoCarga, valorKM, valorKG,
+        valorPeso, desconto, acrescimo, taxaExtra, valorFinal, statusEntrega, valorDistancia
     ) => {
 
         try {
             const pool = await getConnection();
 
-            const querySQL = `
+            let querySQL = `
             UPDATE PEDIDOS
-            SET 
+            SET
                 idCliente = @idCliente,
                 dataPedido = @dataPedido,
                 tipoEntrega = @tipoEntrega,
@@ -142,6 +142,30 @@ const pedidoModel = {
                 .input("valorKG", sql.Decimal(10, 2), valorKG)
                 .query(querySQL);
 
+            querySQL = `
+            UPDATE ENTREGAS
+            SET
+                valorDistancia = @valorDistancia,
+                valorPeso = @valorPeso,
+                desconto = @desconto,
+                acrescimo = @acrescimo,
+                taxaExtra = @taxaExtra,
+                valorFinal = @valorFinal,
+                statusEntrega = @statusEntrega
+            WHERE idPedido = @idPedido
+            `;
+
+            await pool.request()
+                .input("idPedido", sql.UniqueIdentifier, idPedido)
+                .input("valorDistancia", sql.Decimal(10, 2), valorDistancia)
+                .input("valorPeso", sql.Decimal(10, 2), valorPeso)
+                .input("desconto", sql.Decimal(10, 2), desconto)
+                .input("acrescimo", sql.Decimal(10, 2), acrescimo)
+                .input("taxaExtra", sql.Decimal(10, 2), taxaExtra)
+                .input("valorFinal", sql.Decimal(10, 2), valorFinal)
+                .input("statusEntrega", sql.VarChar(12), statusEntrega)
+                .query(querySQL);
+
         } catch (error) {
             console.error("Erro ao atualizar pedido", error);
             throw error;
@@ -156,7 +180,6 @@ const pedidoModel = {
 
         try {
 
-            // Remove entregas primeiro (evita erro de FK)
             let querySQL = `
                 DELETE FROM ENTREGAS
                 WHERE idPedido = @idPedido
@@ -166,7 +189,6 @@ const pedidoModel = {
                 .input("idPedido", sql.UniqueIdentifier, idPedido)
                 .query(querySQL);
 
-            // Depois remove o pedido
             querySQL = `
                 DELETE FROM PEDIDOS
                 WHERE idPedido = @idPedido
