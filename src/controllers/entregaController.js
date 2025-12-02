@@ -3,6 +3,7 @@ const { pedidoModel } = require("../models/pedidoModel");
 const { clienteModel } = require('../models/clienteModel');
 
 const entregaController = {
+
     listarEntregas: async (req, res) => {
         try {
             const entregas = await entregaModel.buscarTodas();
@@ -21,10 +22,10 @@ const entregaController = {
                 idCliente,
                 dataPedido,
                 tipoEntrega,
-                distanciaKm,
+                distanciaKM,
                 pesoCarga,
-                valorKm,
-                valorKg
+                valorKM,
+                valorKG
             } = req.body;
 
             // -----------------------------
@@ -32,13 +33,13 @@ const entregaController = {
             // -----------------------------
             if (
                 idCliente === undefined || dataPedido === undefined ||
-                tipoEntrega === undefined || distanciaKm === undefined ||
-                pesoCarga === undefined || valorKm === undefined || valorKg === undefined
+                tipoEntrega === undefined || distanciaKM === undefined ||
+                pesoCarga === undefined || valorKM === undefined || valorKG === undefined
             ) {
                 return res.status(400).json({ erro: "Campos obrigatórios não foram preenchidos" });
             }
 
-            if (isNaN(distanciaKm) || isNaN(pesoCarga) || isNaN(valorKm) || isNaN(valorKg)) {
+            if (isNaN(distanciaKM) || isNaN(pesoCarga) || isNaN(valorKM) || isNaN(valorKG)) {
                 return res.status(400).json({ erro: "Campos preenchidos com valores inválidos" });
             }
 
@@ -58,72 +59,78 @@ const entregaController = {
             }
 
             // -----------------------------
-            //       CÁLCULOS
+            //       CÁLCULOS OFICIAIS
             // -----------------------------
-            let valorDistanciaEntrega = distanciaKm * valorKm;
-            let valorPesoEntrega = pesoCarga * valorKg;
+            let valorDistancia = distanciaKM * valorKM;
+            let valorPeso = pesoCarga * valorKG;
 
-            let valorFinalEntrega = valorDistanciaEntrega + valorPesoEntrega;
+            let valorBaseEntrega = valorDistancia + valorPeso;
 
-            let acrescimoEntrega = 0;
-            let taxaExtraEntrega = 0;
-            let descontoEntrega = 0;
+            let acrescimo = 0;
+            let desconto = 0;
+            let taxaExtra = 0;
 
-            // URGENTE (20% de acrescimo)
+            let valorFinal = valorBaseEntrega;
+
+            // URGENTE = 20% de acréscimo
             if (tipoEntrega.toLowerCase() === "urgente") {
-                acrescimoEntrega = valorFinalEntrega * 0.2;
-                valorFinalEntrega = valorFinalEntrega + acrescimoEntrega;
+                acrescimo = valorBaseEntrega * 0.20;
+                valorFinal += acrescimo;
             }
 
-            // PESO > 50kg → taxa extra de 15
+            // PESO > 50kg → taxa extra fixa de 15
             if (pesoCarga > 50) {
-                taxaExtraEntrega = 15;
-                valorFinalEntrega = valorFinalEntrega + taxaExtraEntrega;
+                taxaExtra = 15;
+                valorFinal += taxaExtra;
             }
 
             // VALOR FINAL > 500 → desconto de 10%
-            if (valorFinalEntrega > 500) {
-                descontoEntrega = valorFinalEntrega * 0.1;
-                valorFinalEntrega = valorFinalEntrega - descontoEntrega;
+            if (valorFinal > 500) {
+                desconto = valorFinal * 0.10;
+                valorFinal -= desconto;
             }
 
             // -----------------------------
-            //       SALVAR NO BANCO
+            //   REGISTRAR PEDIDO + ENTREGA
             // -----------------------------
-            await pedidoModel.inserirPedido(
+            const statusEntrega = "calculado";
+
+            await pedidoModel.inserirPedidos(
                 idCliente,
                 dataPedido,
                 tipoEntrega,
-                distanciaKm,
+                distanciaKM,
                 pesoCarga,
-                valorKm,
-                valorKg,
-                valorDistanciaEntrega,
-                valorPesoEntrega,
-                acrescimoEntrega,
-                taxaExtraEntrega,
-                descontoEntrega,
-                valorFinalEntrega
+                valorKM,
+                valorKG,
+                valorDistancia,
+                valorPeso,
+                valorFinal,
+                acrescimo,
+                desconto,
+                taxaExtra,
+                statusEntrega
             );
 
             // -----------------------------
-            //     RETORNO PARA O CLIENTE
+            //   RETORNO AO CLIENTE
             // -----------------------------
             res.status(201).json({
-                message: "Pedido cadastrado com sucesso!",
+                message: "Entrega registrada com sucesso!",
                 calculo: {
-                    valorDistanciaEntrega,
-                    valorPesoEntrega,
-                    acrescimoEntrega,
-                    taxaExtraEntrega,
-                    descontoEntrega,
-                    valorFinalEntrega
+                    valorDistancia,
+                    valorPeso,
+                    acrescimo,
+                    desconto,
+                    taxaExtra,
+                    valorFinal,
+                    statusEntrega
                 }
             });
 
         } catch (error) {
-            console.error("Erro ao cadastrar pedido:", error);
-            res.status(500).json({ message: "Erro interno no servidor ao cadastrar pedido!" });
+            console.error("Erro ao registrar entrega:", error);
+            res.status(500).json({ message: "Erro interno no servidor ao registrar entrega!" });
         }
     },
 

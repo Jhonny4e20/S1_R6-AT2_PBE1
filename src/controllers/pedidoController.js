@@ -1,173 +1,218 @@
-const { pedidoModel } = require("../models/pedidoModel"); //importa o modelo de pedido
-const { clienteModel } = require("../models/clienteModel"); //importa o modelo de cliente
+const { pedidoModel } = require("../models/pedidoModel");
+const { clienteModel } = require("../models/clienteModel");
 
 const pedidoController = {
 
     listarPedidos: async (req, res) => {
         try {
-            const pedidos = await pedidoModel.buscarTodos(); //busca todos os pedidos no banco de dados
+            const pedidos = await pedidoModel.buscarTodos();
             res.status(200).json(pedidos);
 
         } catch (error) {
             console.error("ERRO ao listar pedidos:", error);
-            res.status(500).json({ erro: "ERRO interno ao listar pedidos!" }); //retorna erro 500 em caso de falha no servidor
+            res.status(500).json({ erro: "ERRO interno ao listar pedidos!" });
         }
     },
-   criarPedido: async (req, res) => {
-        
-        try{
 
-        const { idCliente,
+    criarPedido: async (req, res) => {
+
+        try {
+
+            const {
+                idCliente,
                 dataPedido,
                 tipoEntrega,
-                distanciaKm,
-                pesoCarga, 
-                valorKm, 
-                valorKg
-                } = req.body
+                distanciaKM,
+                pesoCarga,
+                valorKM,
+                valorKG
+            } = req.body;
 
-            if(idCliente == undefined || dataPedido == undefined || tipoEntrega == undefined || distanciaKm == undefined || pesoCarga == undefined || valorKm == undefined || valorKg == undefined){
-                return res.status(400).json({erro: "Campos obrigatórios não foram preenchidos"})
+            // -----------------------------
+            //       VALIDAÇÕES
+            // -----------------------------
+            if (
+                idCliente == undefined || dataPedido == undefined ||
+                tipoEntrega == undefined || distanciaKM == undefined ||
+                pesoCarga == undefined || valorKM == undefined || valorKG == undefined
+            ) {
+                return res.status(400).json({ erro: "Campos obrigatórios não foram preenchidos" });
             }
 
-            if ( isNaN(distanciaKm) || isNaN(pesoCarga) || isNaN(valorKm) || isNaN(valorKg)  ) {
-                return res.status(400).json({erro: "Campos preenchidos com valores inválidos"})
+            if (isNaN(distanciaKM) || isNaN(pesoCarga) || isNaN(valorKM) || isNaN(valorKG)) {
+                return res.status(400).json({ erro: "Campos preenchidos com valores inválidos" });
             }
 
-            if(idCliente.length != 36 ){
-                return res.status(400).json({erro: "Id do Cliente inválido"})
+            if (idCliente.length != 36) {
+                return res.status(400).json({ erro: "Id do Cliente inválido" });
             }
-            
+
             const data = new Date(dataPedido);
-            if(isNaN(data.getTime())){
-                return res.status(400).json({erro: "Data do pedido inválida"})
-            }
-            
-            const cliente = await clienteModel.buscarUm(idCliente); 
-
-            if(!cliente || cliente.length != 1){
-                return res.status(404).json({erro: "Cliente não encontrado"})
-            }  
-
-            valorDistanciaEntrega = distanciaKm * valorKm
-
-            valorPesoEntrega = pesoCarga * valorKg
-
-            valorFinalEntrega = valorPesoEntrega + valorDistanciaEntrega
-
-
-            
-            if(tipoEntrega == "urgente".toLowerCase()){
-                acrescimoEntrega = (valorFinalEntrega * 0.2)
-
-                valorFinalEntrega = valorFinalEntrega + acrescimoEntrega
-                
-                if(pesoCarga > 50){
-                taxaExtraEntrega = valorFinalEntrega + 15
+            if (isNaN(data.getTime())) {
+                return res.status(400).json({ erro: "Data do pedido inválida" });
             }
 
-                if(valorFinalEntrega > 500){
-                descontoEntrega = (valorFinalEntrega * 0.1) + valorFinalEntrega
-            }
-            } 
+            const cliente = await clienteModel.buscarUm(idCliente);
 
-            if(valorFinalEntrega > 500){
-                descontoEntrega = (valorFinalEntrega * 0.1) + valorFinalEntrega
+            if (!cliente || cliente.length != 1) {
+                return res.status(404).json({ erro: "Cliente não encontrado" });
             }
 
-            if(pesoCarga > 50){
-                taxaExtraEntrega = valorFinalEntrega + 15
+            // -----------------------------
+            //          CÁLCULOS
+            // -----------------------------
+            let valorDistancia = distanciaKM * valorKM;
+            let valorPeso = pesoCarga * valorKG;
+
+            let valorBaseEntrega = valorDistancia + valorPeso;
+
+            let acrescimo = 0;
+            let desconto = 0;
+            let taxaExtra = 0;
+
+            let valorFinal = valorBaseEntrega;
+
+            // URGENTE = acrescimo 20%
+            if (tipoEntrega.toLowerCase() === "urgente") {
+                acrescimo = valorBaseEntrega * 0.20;
+                valorFinal += acrescimo;
             }
 
+            // PESO > 50kg → taxa extra fixa de 15
+            if (pesoCarga > 50) {
+                taxaExtra = 15;
+                valorFinal += taxaExtra;
+            }
 
-            await pedidoModel.inserirPedidos( idCliente, dataPedido, tipoEntrega, distanciaKm, pesoCarga, valorKm, valorKg);
+            // VALOR FINAL > 500 → desconto 10%
+            if (valorFinal > 500) {
+                desconto = valorFinal * 0.10;
+                valorFinal -= desconto;
+            }
 
-            res.status(201).json({ message: "Pedido cadastrado com sucesso!"});
-        }catch (error) {
-            console.error("Erro ao cadastrar pedido:", error)
-            res.status(500).json({message: "Erro interno no servidor ao cadastrar pedido!"});
+            const statusEntrega = "calculado";
+
+            // -----------------------------
+            //   REGISTRO NO BANCO
+            // -----------------------------
+            await pedidoModel.inserirPedidos(
+                idCliente,
+                dataPedido,
+                tipoEntrega,
+                distanciaKM,
+                pesoCarga,
+                valorKM,
+                valorKG,
+                valorDistancia,
+                valorPeso,
+                valorFinal,
+                acrescimo,
+                desconto,
+                taxaExtra,
+                statusEntrega
+            );
+
+            // -----------------------------
+            //      RETORNO AO CLIENTE
+            // -----------------------------
+            res.status(201).json({
+                message: "Pedido cadastrado com sucesso!",
+                calculo: {
+                    valorDistancia,
+                    valorPeso,
+                    acrescimo,
+                    desconto,
+                    taxaExtra,
+                    valorFinal,
+                    statusEntrega
+                }
+            });
+
+        } catch (error) {
+            console.error("Erro ao cadastrar pedido:", error);
+            res.status(500).json({ message: "Erro interno no servidor ao cadastrar pedido!" });
         }
 
     },
 
     atualizarPedido: async (req, res) => {
         try {
-            const { idPedido } = req.params; //pega o idPedido dos parâmetros da rota
+            const { idPedido } = req.params;
             const {
                 idCliente,
                 dataPedido,
                 tipoEntrega,
-                distanciaKm,
+                distanciaKM,
                 pesoCarga,
-                valorKm,
-                valorKg
-            } = req.body; 
+                valorKM,
+                valorKG
+            } = req.body;
 
             if (idPedido.length !== 36) {
-                return res.status(400).json({ erro: "ID do pedido inválido!" }); //valida o idPedido
+                return res.status(400).json({ erro: "ID do pedido inválido!" });
             }
 
-            const pedido = await pedidoModel.buscarUm(idPedido); //busca o pedido pelo idPedido
+            const pedido = await pedidoModel.buscarUm(idPedido);
 
             if (!pedido || pedido.length !== 1) {
-                return res.status(404).json({ erro: "Pedido não encontrado!" }); //retorna erro 404 se o pedido não for encontrado
-            } 
+                return res.status(404).json({ erro: "Pedido não encontrado!" });
+            }
 
             if (idCliente) {
                 if (idCliente.length !== 36) {
-                    return res.status(400).json({ erro: "ID do cliente inválido!" }); //valida o idCliente
+                    return res.status(400).json({ erro: "ID do cliente inválido!" });
                 }
 
-                const cliente = await clienteModel.buscarUm(idCliente); //busca o cliente pelo idCliente
+                const cliente = await clienteModel.buscarUm(idCliente);
                 if (!cliente || cliente.length !== 1) {
-                    return res.status(404).json({ erro: "Cliente não encontrado!" }); //retorna erro 404 se o cliente não for encontrado
+                    return res.status(404).json({ erro: "Cliente não encontrado!" });
                 }
             }
 
-            const pedidoAtual = pedido[0]; //pega o pedido atual
+            const pedidoAtual = pedido[0];
 
-            await pedidoModel.atualizarPedido( //atualiza o pedido no banco de dados
+            await pedidoModel.atualizarPedido(
                 idPedido,
                 idCliente ?? pedidoAtual.idCliente,
                 dataPedido ?? pedidoAtual.dataPedido,
                 tipoEntrega ?? pedidoAtual.tipoEntrega,
-                distanciaKm ?? pedidoAtual.distanciaKm,
+                distanciaKM ?? pedidoAtual.distanciaKM,
                 pesoCarga ?? pedidoAtual.pesoCarga,
-                valorKm ?? pedidoAtual.valorKm,
-                valorKg ?? pedidoAtual.valorKg
-            ); //atualiza o pedido no banco de dados
+                valorKM ?? pedidoAtual.valorKM,
+                valorKG ?? pedidoAtual.valorKG
+            );
 
-            res.status(200).json({ mensagem: "Pedido atualizado com sucesso!" }); //retorna sucesso 200 em caso de atualização bem-sucedida
+            res.status(200).json({ mensagem: "Pedido atualizado com sucesso!" });
 
         } catch (error) {
             console.error("ERRO ao atualizar pedido:", error);
-            res.status(500).json({ erro: "Erro interno ao atualizar pedido!" }); //retorna erro 500 em caso de falha no servidor
+            res.status(500).json({ erro: "Erro interno ao atualizar pedido!" });
         }
     },
 
-    deletarPedido: async (req, res) => { //deleta um pedido
+    deletarPedido: async (req, res) => {
         try {
             const { idPedido } = req.params;
 
-            if (idPedido.length !== 36) { //valida o idPedido
-                return res.status(400).json({ erro: "ID do pedido inválido!" }); //retorna erro 400 em caso de idPedido inválido
+            if (idPedido.length !== 36) {
+                return res.status(400).json({ erro: "ID do pedido inválido!" });
             }
 
-            const pedido = await pedidoModel.buscarUm(idPedido); //busca o pedido pelo idPedido
+            const pedido = await pedidoModel.buscarUm(idPedido);
 
             if (!pedido || pedido.length !== 1) {
-                return res.status(404).json({ erro: "Pedido não encontrado!" }); //retorna erro 404 se o pedido não for encontrado
+                return res.status(404).json({ erro: "Pedido não encontrado!" });
             }
 
             await pedidoModel.deletarPedido(idPedido);
 
-            res.status(200).json({ mensagem: "Pedido deletado com sucesso!" }); //retorna sucesso 200 em caso de deleção bem-sucedida
+            res.status(200).json({ mensagem: "Pedido deletado com sucesso!" });
 
         } catch (error) {
             console.error("ERRO ao deletar pedido:", error);
-            res.status(500).json({ erro: "Erro interno ao deletar pedido!" }); //retorna erro 500 em caso de falha no servidor
+            res.status(500).json({ erro: "Erro interno ao deletar pedido!" });
         }
     }
 };
 
-module.exports = { pedidoController }; //exporta o pedidoController
+module.exports = { pedidoController };
