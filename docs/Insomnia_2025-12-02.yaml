@@ -1,4 +1,5 @@
 type: collection.insomnia.rest/5.0
+schema_version: "5.1"
 name: S1_R6-AT2_PBE1
 meta:
   id: wrk_e85eb8f850154bf3ae706f06d4239d3b
@@ -113,12 +114,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: localhost:8081/clientes/34EABF30-795F-4D8A-96E2-C584AA163DD1
+      - url: localhost:8081/clientes/51FCF46D-C928-40B0-AF59-C4E844979E85
         name: Deletar Clientes
         meta:
           id: req_dd6b729920ef43f1b8866a80f1dc9e11
           created: 1762888072316
-          modified: 1764092809530
+          modified: 1764680728936
           isPrivate: false
           description: ""
           sortKey: -1762888072316
@@ -142,12 +143,12 @@ collection:
       sortKey: -1762861536556
       description: ""
     children:
-      - url: localhost:8081/pedidos/6F014C3E-E694-43DD-BCCC-31213F3757B0
+      - url: localhost:8081/pedidos/600AE51A-A007-4849-A4D3-DBE5D0760EB1
         name: Deletar Pedidos
         meta:
           id: req_f13fef466f5f45baa26f1083e9ad49cb
           created: 1763466197774
-          modified: 1764096260156
+          modified: 1764688769379
           isPrivate: false
           description: ""
           sortKey: -1763466286310
@@ -163,12 +164,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: localhost:8081/pedidos/0969D37F-F14A-4B9F-A277-2303C5ED3F12
+      - url: localhost:8081/pedidos/42CE8338-68E8-46BF-BC84-4E78EF3ABEE1
         name: Atualizar Pedidos
         meta:
           id: req_2a828799793e46d5953beb99bff1603e
           created: 1763466200512
-          modified: 1763478376200
+          modified: 1764690612907
           isPrivate: false
           description: ""
           sortKey: -1763466286210
@@ -177,12 +178,15 @@ collection:
           mimeType: application/json
           text: |-
             {
-              "dataPedido": "2025-10-03",
-              "tipoEntrega": "urgente",
-              "distanciaKm": 70,
-              "pesoCarga": 28.5,
-              "valorKm": 4.7,
-              "valorKg": 2.9
+            		"dataPedido": "2025-12-02T00:00:00.000Z",
+            		"tipoEntrega": "normal",
+            		"statusEntrega": "calculado",
+            		"distanciaKM": 4,
+            		"pesoCarga": 2,
+            		"valorKM": 10,
+            		"valorKG": 10,
+            		"idCliente": "DC0AA0DF-4780-4DCF-A265-69DAC2F267B6",
+            		"nomeCliente": "João Pedro Barbosa Kovalski"
             }
         headers:
           - name: Content-Type
@@ -202,7 +206,7 @@ collection:
         meta:
           id: req_eae6fe0e52d444629b86a9c326851b51
           created: 1763466202448
-          modified: 1764094916460
+          modified: 1764689620847
           isPrivate: false
           description: ""
           sortKey: -1763466286110
@@ -211,21 +215,22 @@ collection:
           mimeType: application/json
           text: "{
 
-            \t\"idCliente\": \"DC0AA0DF-4780-4DCF-A265-69DAC2F267B6\",
+            \  \"idCliente\": \"DC0AA0DF-4780-4DCF-A265-69DAC2F267B6\",
 
-            \  \"dataPedido\": \"2025-10-03\",
+            \  \"dataPedido\": \"2025-12-02\",
 
-            \  \"tipoEntrega\": \"urgente\",
+            \  \"tipoEntrega\": \"normal\",
 
-            \  \"distanciaKm\": 10,
+            \  \"distanciaKM\": 2,
 
-            \  \"pesoCarga\": 10,
+            \  \"pesoCarga\": 2,
 
-            \  \"valorKm\": 2,
+            \  \"valorKM\": 10,
 
-            \  \"valorKg\": 2
+            \  \"valorKG\": 10
 
             }
+
 
 
 
@@ -308,7 +313,7 @@ collection:
         meta:
           id: req_3d060d04fee641909c96e083912e1c0a
           created: 1763483915858
-          modified: 1764096103940
+          modified: 1764674385055
           isPrivate: false
           description: ""
           sortKey: -1764074516286
@@ -317,7 +322,7 @@ collection:
           mimeType: application/json
           text: |+
             {
-            	"idCliente": "DC0AA0DF-4780-4DCF-A265-69DAC2F267B6"
+            	"idCliente": "98656A17-8B6C-44CD-8B05-200C51BF4B1B"
             }
 
         headers:
