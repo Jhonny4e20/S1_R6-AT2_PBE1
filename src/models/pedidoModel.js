@@ -3,10 +3,15 @@ const { sql, getConnection } = require("../config/db")
 
 const pedidoModel = {
 
+    // ----------------------------------------------------
+    // BUSCAR TODOS OS PEDIDOS (com o nome do cliente)
+    // SELECT + INNER JOIN
+    // ----------------------------------------------------
     buscarTodos: async () => {
         try {
             const pool = await getConnection();
 
+            // Busca todos os pedidos e junta com os clientes
             const querySQL = `
             SELECT 
                 P.*, C.nomeCliente
@@ -24,6 +29,9 @@ const pedidoModel = {
         }
     },
 
+    // ----------------------------------------------------
+    // BUSCAR UM PEDIDO PELO ID
+    // ----------------------------------------------------
     buscarUm: async (idPedido) => {
         try {
             const pool = await getConnection();
@@ -42,6 +50,10 @@ const pedidoModel = {
         }
     },
 
+    // ----------------------------------------------------
+    // INSERIR PEDIDO + ENTREGA (duas tabelas)
+    // Usando TRANSACTION para garantir integridade
+    // ----------------------------------------------------
     inserirPedidos: async (
         idCliente, dataPedido, tipoEntrega,
         distanciaKM, pesoCarga, valorKM, valorKG,
@@ -55,7 +67,7 @@ const pedidoModel = {
 
         try {
 
-            // INSERT PEDIDO
+            // 1️⃣ INSERE PEDIDO E RETORNA idPedido
             let querySQL = `
             INSERT INTO Pedidos (
                 idCliente, dataPedido, tipoEntrega, distanciaKM, pesoCarga, valorKM, valorKG
@@ -78,7 +90,7 @@ const pedidoModel = {
 
             const idPedido = result.recordset[0].idPedido;
 
-            // INSERT ENTREGA
+            // 2️⃣ INSERE ENTREGA RELACIONADA AO PEDIDO
             querySQL = `
             INSERT INTO ENTREGAS(
                 idPedido, valorDistancia, valorPeso, valorFinal,
@@ -101,15 +113,19 @@ const pedidoModel = {
                 .input("statusEntrega", sql.VarChar(12), statusEntrega)
                 .query(querySQL);
 
+            // Finaliza transação
             await transaction.commit();
 
         } catch (error) {
-            await transaction.rollback();
+            await transaction.rollback(); // desfaz tudo em caso de erro
             console.error("Erro ao inserir pedido", error);
             throw error;
         }
     },
 
+    // ----------------------------------------------------
+    // ATUALIZAR PEDIDO + ENTREGA
+    // ----------------------------------------------------
     atualizarPedido: async (
         idPedido, idCliente, dataPedido, tipoEntrega, distanciaKM, pesoCarga, valorKM, valorKG,
         valorPeso, desconto, acrescimo, taxaExtra, valorFinal, statusEntrega, valorDistancia
@@ -118,6 +134,7 @@ const pedidoModel = {
         try {
             const pool = await getConnection();
 
+            // Atualiza a tabela PEDIDOS
             let querySQL = `
             UPDATE PEDIDOS
             SET
@@ -142,6 +159,7 @@ const pedidoModel = {
                 .input("valorKG", sql.Decimal(10, 2), valorKG)
                 .query(querySQL);
 
+            // Atualiza tabela ENTREGAS
             querySQL = `
             UPDATE ENTREGAS
             SET
@@ -172,6 +190,9 @@ const pedidoModel = {
         }
     },
 
+    // ----------------------------------------------------
+    // DELETAR PEDIDO + ENTREGA (com TRANSACTION)
+    // ----------------------------------------------------
     deletarPedido: async (idPedido) => {
 
         const pool = await getConnection();
@@ -180,6 +201,7 @@ const pedidoModel = {
 
         try {
 
+            // 1️⃣ Deleta entrega ligada ao pedido
             let querySQL = `
                 DELETE FROM ENTREGAS
                 WHERE idPedido = @idPedido
@@ -189,6 +211,7 @@ const pedidoModel = {
                 .input("idPedido", sql.UniqueIdentifier, idPedido)
                 .query(querySQL);
 
+            // 2️⃣ Deleta o pedido
             querySQL = `
                 DELETE FROM PEDIDOS
                 WHERE idPedido = @idPedido
@@ -198,10 +221,10 @@ const pedidoModel = {
                 .input("idPedido", sql.UniqueIdentifier, idPedido)
                 .query(querySQL);
 
-            await transaction.commit();
+            await transaction.commit(); // tudo certo
 
         } catch (error) {
-            await transaction.rollback();
+            await transaction.rollback(); // desfaz se der erro
             console.error("Erro ao deletar Pedido:", error);
             throw error;
         }

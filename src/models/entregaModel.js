@@ -1,8 +1,13 @@
-const { sql, getConnection } = require("../config/db"); //importa a configuração do banco de dados
+const { sql, getConnection } = require("../config/db"); // Importa configuração e função de conexão do banco
 
+// Model responsável por realizar operações na tabela "Entregas"
 const entregaModel = {
 
-    buscarTodas: async () => { //busca todas as entregas
+    // -------------------------------------------------------
+    // BUSCAR TODAS AS ENTREGAS
+    // SELECT * FROM Entregas
+    // -------------------------------------------------------
+    buscarTodas: async () => { 
         try {
             const pool = await getConnection();
 
@@ -10,14 +15,19 @@ const entregaModel = {
                 SELECT * FROM Entregas
             `;
 
-            const result = await pool.request().query(querySQL); //executa a consulta
-            return result.recordset;
+            const result = await pool.request().query(querySQL); // Executa a query
+            return result.recordset; // Retorna registros encontrados
+
         } catch (error) {
             console.error("ERRO ao buscar entregas:", error);
-            throw error;
+            throw error; // Repassa o erro para o controller
         }
     }, 
 
+    // -------------------------------------------------------
+    // BUSCAR UMA ENTREGA PELO ID
+    // SELECT * FROM Entregas WHERE idEntrega = ...
+    // -------------------------------------------------------
     buscarUma: async (idEntrega) => {
         try {
             const pool = await getConnection();
@@ -27,15 +37,20 @@ const entregaModel = {
             `;
 
             const result = await pool.request()
-                .input("idEntrega", sql.UniqueIdentifier, idEntrega)
+                .input("idEntrega", sql.UniqueIdentifier, idEntrega) // Parametrização segura
                 .query(querySQL);
+
             return result.recordset;
+
         } catch (error) {
             console.error("ERRO ao buscar entrega:", error);
             throw error;
         }
     },
 
+    // -------------------------------------------------------
+    // REGISTRAR UMA ENTREGA (INSERT)
+    // -------------------------------------------------------
     registrarEntrega: async (
 
         idEntrega,
@@ -52,6 +67,7 @@ const entregaModel = {
     ) => {
         try {
             const pool = await getConnection();
+
             const querySQL = `
                 INSERT INTO Entregas (
                     idEntrega,
@@ -79,6 +95,7 @@ const entregaModel = {
                 )
             `;
 
+            // Preenche cada campo da query com seu tipo correto
             await pool.request()
                 .input("idEntrega", sql.UniqueIdentifier, idEntrega)
                 .input("idPedido", sql.UniqueIdentifier, idPedido)
@@ -91,17 +108,21 @@ const entregaModel = {
                 .input("valorFinal", sql.Decimal(10, 2), valorFinal)
                 .input("statusEntrega", sql.VarChar(20), statusEntrega)
                 .query(querySQL);
-        }
 
-        catch (error) {
+        } catch (error) {
             console.error("ERRO ao registrar entrega:", error);
-            throw error;
+            throw error; 
         }
     },
 
+    // -------------------------------------------------------
+    // ATUALIZAR APENAS O STATUS DA ENTREGA
+    // UPDATE Entregas SET statusEntrega = ...
+    // -------------------------------------------------------
     atualizarStatus: async ( idEntrega, statusEntrega ) => {
         try {
             const pool = await getConnection();
+
             const querySQL = `
                 UPDATE Entregas
                 SET statusEntrega = @statusEntrega
@@ -112,21 +133,29 @@ const entregaModel = {
                 .input("idEntrega", sql.UniqueIdentifier, idEntrega)
                 .input("statusEntrega", sql.VarChar(20), statusEntrega)
                 .query(querySQL);
+
         } catch (error) {
             console.error("ERRO ao atualizar status da entrega:", error);
             throw error;
         }
     },
 
+    // -------------------------------------------------------
+    // EXCLUIR UMA ENTREGA
+    // DELETE FROM Entregas WHERE idEntrega = ...
+    // -------------------------------------------------------
     deletarEntrega: async (idEntrega) => {
         try {
             const pool = await getConnection();
+
             const querySQL = `
                 DELETE FROM Entregas WHERE idEntrega = @idEntrega
             `;
+
             await pool.request()
                 .input("idEntrega", sql.UniqueIdentifier, idEntrega)
                 .query(querySQL);
+
         } catch (error) {
             console.error("ERRO ao deletar entrega:", error);
             throw error;
@@ -134,4 +163,5 @@ const entregaModel = {
     }
 }
 
+// Exporta o model
 module.exports = { entregaModel };
