@@ -103,7 +103,11 @@ const clienteController = {
                 return res.status(404).json({ erro: "Cliente não encontrado!" }); //retorna erro 404 se o cliente não for encontrado
             }
 
-            await clienteModel.deletarCliente(idCliente); //deleta o cliente do banco de dados
+            const pedido = await pedidoModel.buscarUm(idCliente)
+
+            if(pedido.length > 0){
+                return res.status(409).json({message: "Entrega e pedido associado ao seu id, os delete para prosseguir com a ação!"});
+            }
 
             res.status(200).json({ mensagem: "Cliente deletado com sucesso!" });
 

@@ -5,12 +5,12 @@
 ### Clientes
 
 #### GET/clientes
--**Descrição**: Obtém uma lista de Clientes
--**Response**: Array de clientes
+- **Descrição**: Obtém uma lista de Clientes
+- **Response**: Array de clientes
 
 #### POST/clientes
--**Descrição**: Cria um novo Cliente
--**Body**: 
+- **Descrição**: Cria um novo Cliente
+- **Body**: 
 ```
 {
     "nomeCliente": "nome e sobrenome",
@@ -20,16 +20,16 @@
 	"enderecoCliente": "Rua Fortaleza, 312, Meireles, Fortaleza, CE, 60160-250"
 }
 ```
--**Response**: 
+- **Response**: 
 ```
 {
     "message": "Cliente cadastrado com sucesso!"
 }
 ```
 
-#### PUT/clientes
--**Descrição**: Atualiza um Cliente já existente
--**Body**:
+#### PUT/clientes/idCliente
+- **Descrição**: Atualiza um Cliente já existente
+- **Body**:
 ```
 {
     "nomeCliente": "nome e sobrenome atualizado",
@@ -39,7 +39,7 @@
 	"enderecoCliente": "Rua Fortaleza, 312, Meireles, Fortaleza, CE, 60160-250"
 }
 ```
--**Response**:
+- **Response**:
 ```
 {
     "message": "Cliente atualizado com sucesso!"
@@ -47,9 +47,9 @@
 ```
 
 
-#### DELETE/clientes
--**Descrição**: Deleta um Cliente já existente
--**Response**:
+#### DELETE/clientes/idCliente
+- **Descrição**: Deleta um Cliente já existente
+- **Response**:
 ```
 {
     "message": "Cliente deletado com sucesso!"
@@ -63,12 +63,12 @@
 ### Pedidos
 
 #### GET/pedidos
--**Descrição**: Obtém uma lista de Pedidos
--**Response**: Array de pedidos
+- **Descrição**: Obtém uma lista de Pedidos
+- **Response**: Array de pedidos
 
 #### POST/pedidos
--**Descrição**: Cria um novo Pedido
--**Body**: 
+- **Descrição**: Cria um novo Pedido
+- **Body**: 
 ```
 {
     "idCliente": "78CA14ED-8105-4BE7-B7C2-E6E536708D0E",
@@ -80,16 +80,16 @@
     "valorKg": 2.9
 }
 ```
--**Response**: 
+- **Response**: 
 ```
 {
     "message": "Pedido cadastrado com sucesso!"
 }
 ```
 
-#### PUT/pedidos
--**Descrição**: Atualiza um Pedido já existente
--**Body**:
+#### PUT/pedidos/idPedido
+- **Descrição**: Atualiza um Pedido já existente
+- **Body**:
 ```
 {
     "dataPedido": "2025-10-03",
@@ -100,7 +100,7 @@
     "valorKg": 2.9
 }
 ```
--**Response**:
+- **Response**:
 ```
 {
     "message": "Pedido atualizado com sucesso!"
@@ -108,9 +108,9 @@
 ```
 
 
-#### DELETE/clientes
--**Descrição**: Deleta um Pedido já existente
--**Response**:
+#### DELETE/pedidos/idPedido
+- **Descrição**: Deleta um Pedido já existente
+- **Response**:
 ```
 {
     "message": "Pedido deletado com sucesso!"
@@ -123,5 +123,14 @@
 ### Entregas
 
 #### GET/entregas
--**Descrição**: Obtém uma lista de Entregas
--**Response**: Array de entregas
+- **Descrição**: Obtém uma lista de Entregas
+- **Response**: Array de entregas
+
+#### POST/entregas
+- **Descrição**: Cria uma nova Entrega diretamente depois de um novo Pedido ja ser criado
+- **Response**: 
+```
+{
+    "message": "Entrega cadastrada com sucesso!"
+}
+```
